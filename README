@@ -1,0 +1,51 @@
+##################################
+#	Soomboot-IL		 #
+#	Version 2.0		 #
+##################################
+
+===============
+=Installation:=
+===============
+
+1) Edit bot.conf to your settings:
+
+	!-----------------------------------------------------------!
+	!The bot section must be there, even the password option.!
+	!-----------------------------------------------------------!
+
+	- Description for the bot.conf file:
+		[bot] -> This is the bot section
+		nick=foobot -> Here we give to the bot a nickname
+		password=changeme -> This is the password for the admins
+		admins=admin1, admin2, admin3 - > Which nicks are admins
+		server=irc.freenode.net -> The server to connect
+		port=6667 -> The port of the server
+		channel=#channel -> The channel that the bot should be there.
+		prefix=. -> Regular command prefix
+		aprefix=@ -> Admin command prefix
+		plugins=plug1,plug2 -> Loading plugins at startup
+*optional*	vhost=domain.example.com -> Vhost for the bot
+		[nickserv] -> Nickserv auto identify section
+		password=changeme -> the bot's password on NickServ
+
+2) Make sure you have a directory called "logs" with writing permissions
+
+3) Write in the console: python bot.py &
+
+4) Now the bot is running! 
+
+
+===========
+=Admin builtin commands:=
+===========
+
+@bot -> shutdown -> Will turn off the bot
+	restart -> Will restart the bot
+	plugins -> Will show you a list of the loaded plugins
+	rehash -> Will rehash the configuration
+	
+	
+@load <plugin> -> Will load a plugin
+@reload <plugin> -> Will reload a plugin
+@unload <plugin> -> Will unload a plugin from the bot
+
