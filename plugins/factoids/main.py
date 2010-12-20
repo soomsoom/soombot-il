@@ -84,6 +84,6 @@ def pubhandler_factoids(connection, event):
         command=msg[0].lstrip(conf['prefix']) # Receive the command and remove the beginning command char
         if factoids.has_key(command): # If the command is a factoid
             if type(factoids[command]) == unicode:
-                connection.privmsg(chan, '{0}: {1}'.format(nick, factoids[command].encode('utf-8'))) # Send the factoid data to the channel
+                connection.privmsg(chan, '{0}'.format(factoids[command].encode('utf-8'))) # Send the factoid data to the channel
             else:
-                connection.privmsg(chan, '{0}: {1}'.format(nick, unicode(factoids[command], 'utf-8').encode('utf-8'))) # Send the factoid data to the channel
+                connection.privmsg(chan, '{0}'.format(unicode(factoids[command], 'utf-8').encode('utf-8'))) # Send the factoid data to the channel
