@@ -56,7 +56,8 @@ def loadPlugin(name):
 # Getting name of the plugin to unload.
 def unloadPlugin(name):
 	global ircc
-	package="plugins.%s" % name
+	package="plugins.%s.main" % name
+	plugname="plugins.%s" % name
 	if ((name in loadedPlugins) == False):
 		return "%s is not loaded" % name
 	else:
@@ -80,7 +81,7 @@ def unloadPlugin(name):
 				ircc.remove_global_handler ('join',  funcj)
 			loadedPlugins.remove(name)
 			for n in sys.modules.keys():
-     				if (n.startswith(package) == True):
+     				if (n.startswith(plugname) == True):
             				del(sys.modules[n])
 			return "Done!"
 		except Exception: # Catching exceptions to avoid crashes...
@@ -100,4 +101,15 @@ def reloadPlugin(name):
 def getPluginPackage(name):
 	package="plugins.%s.main" % name
 	return package
-	
+
+def add_help(cmd,wh):
+	if (wh == "pm"):
+		coha.priv_insert(cmd)
+	if (wh == "pub"):
+		coha.pub_insert(cmd)
+		
+def remove_help(cmd,wh):
+	if (wh == "pm"):
+		coha.priv_remove(cmd)
+	if (wh == "pub"):
+		coha.pub_remove(cmd)
