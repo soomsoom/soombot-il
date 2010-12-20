@@ -27,6 +27,8 @@ def ListFactoids(start=True):
         f.write(pickle.dumps(factoids))
         f.flush()
         f.close()
+    for f in factoids:
+        add_help(f, "pub")
 
 parseConfig()
 ListFactoids()
@@ -64,15 +66,21 @@ def factoids_remove(connection, msg, chan, nick):
         
 def factoids_update(connection, msg, chan, nick):
     """ Update the factoids list. """
-    ListFactoids()
-    
-def privadmin_factoids(connection, msg, chan, nick):
-    darray = {'add': factoids_add, 'remove': factoids_remove, 'update': factoids_update}
+    global factoids
+    ListFactoids(True)
 
-    if len(msg) > 1 and darray.has_key(msg[0]):
+def factoids_list(connection, msg, chan, nick):
+    """ Return the factoids list. """
+    global factoids
+    connection.privmsg(nick, ', '.join(factoids))
+ 
+def privadmin_factoids(connection, msg, chan, nick):
+    darray = {'add': factoids_add, 'remove': factoids_remove, 'update': factoids_update, 'list': factoids_list}
+
+    if len(msg) >= 1 and darray.has_key(msg[0]):
         darray[msg[0]](connection, msg, chan, nick)
     else:
-        connection.privmsg(nick,'Usage: @factoids [add/remove/update] [<command>] [<message>]')
+        connection.privmsg(nick,'Usage: @factoids [add/remove/update/list] [<command>] [<message>]')
 
 def pubhandler_factoids(connection, event):
     global conf, factoids
