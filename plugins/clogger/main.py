@@ -3,7 +3,7 @@
 from ConfigParser import SafeConfigParser
 from plugins.clogger.advancedlogging.htmllogger import HTMLLogger
 import sys
-import trackback
+import traceback
 
 # Get the logging path and the autostart boolean from the configuration file
 confparser = SafeConfigParser()
