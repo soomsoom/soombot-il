@@ -104,12 +104,12 @@ def plugin(act):
 	
 def join(chan):
 	global server
-	cor.server.join(chan)
+	cor.server.join(chan[0])
 	return "Done!"
 	
 def part(chan):
 	global server
-	cor.server.part(chan)
+	cor.server.part(chan[0])
 	return "Done!"
 
 
