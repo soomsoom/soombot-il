@@ -11,7 +11,7 @@ import sys, os
 
 pubAdmin = []
 privAdmin = []
-builtin = ['join','part','load','unload','rload','bot']
+builtin = ['join','part','plugin','shutdown','restart','rehash']
 identifiedAdmins = []
 
 #################################
@@ -55,21 +55,52 @@ def removePrvAdmin(name):
 		privAdmin.remove(name)
 
 
+#########################################
+#	Nessecery Functions	 	#
+#########################################
+
+def pluglist():
+	ret = ""
+	for x in os.listdir("plugins"):
+		if os.path.isdir("plugins/%s" %x):
+			if (ret):
+				ret += ", "
+			if x in plug.loadedPlugins:
+				ret += "%s*" %x
+			else:
+				ret += x
+	return ret
 
 #########################################
 #	Built-in Admin Commands 	#
 #########################################
 
-def load(name):
-	return plug.loadPlugin(name)
-	
-def unload(name):
-	return plug.unloadPlugin(name)
-	
-def rload(name):
-	plug.reloadPlugin(name)
-	return "Done!"
-
+def plugin(act):
+	if len(act) > 0:
+		if (act[0] == "load"):
+			if (act[1] != None):
+				return plug.loadPlugin(act[1])
+			else:
+				return "What to load?"
+		elif act[0] == "unload":
+			if (act[1] != None):
+				return plug.unloadPlugin(act[1])
+			else:
+				return "What to unload?"
+		elif act[0] == "rload":
+			if (act[1] != None):
+				plug.reloadPlugin(act[1])
+				return "Done!"
+			else:
+				return "What to reload?"
+		elif act[0] == "list":
+			#send = ", ".join(plug.loadedPlugins)
+			send = pluglist()
+			return send
+		else:
+			return "Unkown Command!"
+	return "Use %splugin <load [name], unload [name], rload [name], list>" % cor.conf['aprefix']
+		
 	
 def join(chan):
 	global server
@@ -80,26 +111,24 @@ def part(chan):
 	global server
 	cor.server.part(chan)
 	return "Done!"
+
+
+def shutdown(cmd):
+	global ircc, server
+	cor.server.disconnect("Goodbye!")
+	sys.exit()
 	
+def restart(cmd):
+	global ircc, server
+	path=sys.path[0]
+	cor.server.disconnect("BRB")
+	cmd = "python2 "+ path + "/bot.py %s &" % cor.configFile  
+	os.system(cmd)
 	
-def bot(command):
-	global ircc,configFile
-	if (len(command) > 0):
-		if command == "shutdown":
-			cor.server.disconnect("Goodbye!")
-			sys.exit()
-		elif command == "restart":
-			path=sys.path[0]
-			cor.server.disconnect("BRB")
-			cmd = "python2.7 "+ path + "/bot.py %s &" % cor.configFile  
-			os.system(cmd)
-		elif command == "plugins":
-			send = ", ".join(plug.loadedPlugins)
-			return send
-		elif command == "rehash":
-			cor.parseConf(cor.configFile)
-			return "Done!"
-		return "Unkown Command!"
-	return "Use %sbot <command>" % cor.conf['acommand']
+def rehash(cmd):
+	global configFile
+	cor.parseConf(cor.configFile)
+	return "Done!"
+
 
 

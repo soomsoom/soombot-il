@@ -81,7 +81,15 @@ def handlePubmsg(connection, event):
 			except Exception:
 				exc_type, exc_value, exc_traceback = sys.exc_info()
 				traceback.print_exception(exc_type, exc_value, exc_traceback,  file=sys.stdout)
-			
+				
+# Handle incoming msgs for channel - for pubhandler functions
+def handlePubmsgh(connection, event):
+	for x in coha.pubfuncs:
+		try:
+			x(connection, event)
+		except Exception:
+			exc_type, exc_value, exc_traceback = sys.exc_info()
+			traceback.print_exception(exc_type, exc_value, exc_traceback,  file=sys.stdout)
 			
 # Handle incoming private msgs
 def handlePrvmsg(connection, event):
@@ -104,14 +112,14 @@ def handlePrvmsg(connection, event):
 					connection.privmsg(nick, "Incorrect Password!")
 			elif (acommand == "login" and len(msg) > 1 and ad.isAdmin(nick) == True):
 				connection.privmsg(nick,"You are already logged in!")
-			elif (ad.isAdmin(nick) and acommand in ad.builtin and len(msg) > 1):
+			elif (ad.isAdmin(nick) and acommand in ad.builtin and len(msg) > 0):
 				func=getattr(ad,acommand)
-				connection.privmsg(chan,func(msg[1]))
+				connection.privmsg(chan,func(msg[1:]))
 			elif (ad.isAdmin(nick) and acommand == "cmds"):
 				x=""
 				if (len(ad.privAdmin) > 0):
 					x = ", " + ", ".join(ad.privAdmin)
-				connection.privmsg(nick, "bot, load, unload, rload, join%s" %x)
+				connection.privmsg(nick, "%s%s" % (", ".join(ad.builtin),x))
 			elif (ad.isAdmin(nick) and acommand in ad.privAdmin):
 				try:
 					package=plug.getPluginPackage(acommand)
@@ -128,6 +136,15 @@ def handlePrvmsg(connection, event):
 		except Exception:
 			exc_type, exc_value, exc_traceback = sys.exc_info()
 			traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+
+# Handle incoming private msgs - for privhandler functions
+def handlePrvmsgh(connection, event):
+	for x in coha.privfucs:
+		try:
+			x(connection, event)
+		except Exception:
+			exc_type, exc_value, exc_traceback = sys.exc_info()
+			traceback.print_exception(exc_type, exc_value, exc_traceback,  file=sys.stdout)
 	
 def handleJoin(connection, event):
 	nick=event.source().split('!')[0]
@@ -174,6 +191,8 @@ def launch(confFile):
 	configFile = confFile
 	ircc.add_global_handler ('pubmsg', handlePubmsg ) # Handle messges on channel.
 	ircc.add_global_handler ('privmsg', handlePrvmsg) # Handles private messages.
+	ircc.add_global_handler ('pubmsg', handlePubmsgh ) # Handle messges on channel - for pubhandler fucntions.
+	ircc.add_global_handler ('privmsg', handlePrvmsgh ) # Handles private messages - for privhandler functions.
 	ircc.add_global_handler ('privnotice', handlePrvNotice) # Handles private notices
 	ircc.add_global_handler ('nick', handleNick ) # handle nick changes
 	ircc.add_global_handler ('part', handlePart ) # handle part

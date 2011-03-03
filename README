@@ -39,13 +39,13 @@
 =Admin builtin commands:=
 ===========
 
-@bot -> shutdown -> Will turn off the bot
-	restart -> Will restart the bot
-	plugins -> Will show you a list of the loaded plugins
-	rehash -> Will rehash the configuration
+@shutdown -> Will turn off the bot
+@restart -> Will restart the bot
+@rehash -> Will rehash the configuration
+@join <#channel> -> Will join to a channel
+@part <#channel> - will part a channel	
 	
-	
-@load <plugin> -> Will load a plugin
-@reload <plugin> -> Will reload a plugin
-@unload <plugin> -> Will unload a plugin from the bot
-
+@plugin -> load <plugin> -> Will load a plugin
+	   rload <plugin> -> Will reload a plugin
+	   unload <plugin> -> Will unload a plugin from the bot
+	   list - Will show all the plugins, and will put '*' near the activiated plugins.

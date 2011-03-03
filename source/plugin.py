@@ -32,10 +32,10 @@ def loadPlugin(name):
 				coha.pub_insert(name)
 			if (hasattr(sys.modules[package],"pubhandler_%s" % name)):
 				func=getattr(sys.modules[package],"pubhandler_%s" % name)
-				ircc.add_global_handler ('pubmsg',  func)
+				coha.pubhandler_insert(func)
 			if (hasattr(sys.modules[package],"privhandler_%s" % name)):
 				funcp=getattr(sys.modules[package],"privhandler_%s" % name)
-				ircc.add_global_handler ('privmsg',  funcp)
+				coha.pubhandler_insert(funcp)
 			if (hasattr(sys.modules[package],"joinhandler_%s" % name)):
 				funcj=getattr(sys.modules[package],"joinhandler_%s" % name)
 				ircc.add_global_handler ('join',  funcj)
@@ -68,14 +68,14 @@ def unloadPlugin(name):
 				coha.pub_remove(name)
 			if (hasattr(sys.modules[package],"pubhandler_%s" % name)):
 				func=getattr(sys.modules[package],"pubhandler_%s" % name)
-				ircc.remove_global_handler('pubmsg',  func)
+				coha.pubhandler_remove(func)
 			if (hasattr(sys.modules[package],"pubadmin_%s" % name)):
 				ad.removePubAdmin(name)
 			if (hasattr(sys.modules[package],"privadmin_%s" % name)):
 				ad.removePrvAdmin(name)
 			if (hasattr(sys.modules[package],"privhandler_%s" % name)):
 				func=getattr(sys.modules[package],"privhandler_%s" % name)
-				ircc.remove_global_handler ('privmsg',  func)
+				coha.privhandler_remove(func)
 			if (hasattr(sys.modules[package],"joinhandler_%s" % name)):
 				funcj=getattr(sys.modules[package],"joinhandler_%s" % name)
 				ircc.remove_global_handler ('join',  funcj)
