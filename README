@@ -30,7 +30,7 @@
 
 2) Make sure you have a directory called "logs" with writing permissions
 
-3) Write in the console: python bot.py &
+3) Write in the console: python bot.py
 
 4) Now the bot is running! 
 
