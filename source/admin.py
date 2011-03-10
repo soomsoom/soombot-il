@@ -122,7 +122,7 @@ def restart(cmd):
 	global ircc, server
 	path=sys.path[0]
 	cor.server.disconnect("BRB")
-	cmd = "python2 "+ path + "/bot.py %s &" % cor.configFile  
+	cmd = "python2 "+ path + "/bot.py %s" % cor.configFile  
 	os.system(cmd)
 	
 def rehash(cmd):

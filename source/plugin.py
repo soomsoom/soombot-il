@@ -47,6 +47,7 @@ def loadPlugin(name):
 		except Exception: # Catching exceptions to avoid crashes...
 			exc_type, exc_value, exc_traceback = sys.exc_info()
 			traceback.print_exception(exc_type, exc_value,exc_traceback, file=sys.stdout) # printing the exceptions without exit the program
+			return "An error occurred please check the errors.log on logs directory"
 	else:
 		return "Cant find this plugin"
 
@@ -79,6 +80,9 @@ def unloadPlugin(name):
 			if (hasattr(sys.modules[package],"joinhandler_%s" % name)):
 				funcj=getattr(sys.modules[package],"joinhandler_%s" % name)
 				ircc.remove_global_handler ('join',  funcj)
+			if (hasattr(sys.modules[package],"unloader_%s" % name)):
+				func=getattr(sys.modules[package],"unloader_%s" % name)
+				func()
 			loadedPlugins.remove(name)
 			for n in sys.modules.keys():
      				if (n.startswith(plugname) == True):
@@ -87,6 +91,7 @@ def unloadPlugin(name):
 		except Exception: # Catching exceptions to avoid crashes...
 			exc_type, exc_value, exc_traceback = sys.exc_info()
 			traceback.print_exception(exc_type, exc_value,exc_traceback, file=sys.stdout) # printing the exceptions without exit the program
+			return "An error occurred please check the errors.log in logs directory"
 			
 			
 			

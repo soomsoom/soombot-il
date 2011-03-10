@@ -1,3 +1,17 @@
+version 2.0.1
+--------------
+* Now bot can move him self to background
+* Indicate when bot connected on the console
+* Responding on ctcp version.
+* New plugin handler: unloader_<plugin-name> - Will execute code before unloading the plugin.
+* Bot will create the 'logs' directory if necessary.
+* Errors logging is replacing the admin logger
+* Admins commands had changed, please see the README file.
+* New Plugins.
+* Bug Fixes
+
+
+
 version 2.0
 --------------
 *new engine

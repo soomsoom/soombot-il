@@ -1,4 +1,10 @@
-import sys, traceback, os, plugins
+import os
+
+if (os.path.exists('logs/') == False):
+		os.mkdir('logs')
+		
+		
+import sys, traceback, plugins
 import source.plugin as plug 
 import source.core as core
 

@@ -14,13 +14,16 @@ import plugin as plug
 import admin as ad
 import commandhandler as coha
 import logging
+__version__= "2.0.1"
 ircc=irclib.IRC() # Creating the Bot object.
 server = ircc.server() # Creating server object
 conf={}
 configFile=""
 startime=""
-LOG_FILENAME = 'logs/admin.log'
-logging.basicConfig(filename=LOG_FILENAME,level=logging.NOTSET)
+LOG_FILENAME = 'logs/errors.log'
+status = 0 # 0 - not connected, 1 - connected!
+FORMAT="%(asctime)s - Error\n"
+logging.basicConfig(filename=LOG_FILENAME,level=logging.NOTSET,format=FORMAT)
 
 def getstartup():
 	return startime
@@ -80,7 +83,7 @@ def handlePubmsg(connection, event):
 				func(connection, msg[1:], chan, nick)
 			except Exception:
 				exc_type, exc_value, exc_traceback = sys.exc_info()
-				traceback.print_exception(exc_type, exc_value, exc_traceback,  file=sys.stdout)
+				logging.exception(traceback.extract_stack())
 				
 # Handle incoming msgs for channel - for pubhandler functions
 def handlePubmsgh(connection, event):
@@ -103,7 +106,7 @@ def handlePrvmsg(connection, event):
 	chan=nick
 	if ('acommand' in locals()):
 		if (nick in conf['admins']):
-			logging.info("%s - %s" % (nick, event.arguments()[0]))
+			
 			if (acommand == "login" and len(msg) > 1 and ad.isAdmin(nick) == False):
 				if (conf['password'] == msg[1]):
 					ad.insertAdmin(nick)
@@ -127,7 +130,7 @@ def handlePrvmsg(connection, event):
 					func(connection, msg[1:], chan, nick)
 				except Exception:
 					exc_type, exc_value, exc_traceback = sys.exc_info()
-					traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+					logging.exception(traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout))
 	if ('command' in locals() and command in plug.loadedPlugins):
 		try:
 			package=plug.getPluginPackage(command)
@@ -135,7 +138,7 @@ def handlePrvmsg(connection, event):
 			func(connection, msg[1:], chan, nick)
 		except Exception:
 			exc_type, exc_value, exc_traceback = sys.exc_info()
-			traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+			logging.exception(traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout))
 
 # Handle incoming private msgs - for privhandler functions
 def handlePrvmsgh(connection, event):
@@ -144,19 +147,38 @@ def handlePrvmsgh(connection, event):
 			x(connection, event)
 		except Exception:
 			exc_type, exc_value, exc_traceback = sys.exc_info()
-			traceback.print_exception(exc_type, exc_value, exc_traceback,  file=sys.stdout)
+			logging.exception(traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout))
 	
 def handleJoin(connection, event):
 	nick=event.source().split('!')[0]
 	global startime
 	if (nick == conf['me'] and event.target() == conf['chan']):
 		startime = time.time()
-		
 
+
+# Handle Welcome message
+def handleWelcome(connection, event):		
+	global status, conf, server
+	status = 1
+	server.join(conf['chan'])  # Channel to join
+	print "Connected!"
+	MoveToBackground()
+	
+	
+# Handle ctcp requerst
+def HandleCtcp(connection, event):
+	nick=event.source().split('!')[0]
+	msg=event.arguments()[0].split(" ")
+	if (msg[0].upper() == "VERSION"):
+		connection.ctcp_reply(nick, "Soombot version: %s" % __version__)
+	
 #Handle incoming private notices
 def handlePrvNotice(connection, event):
+	global status
 	nick=event.source().split('!')[0]
 	msg=event.arguments()
+	if (status == 0):
+		print msg[0]
 	#Seeing if we need to identify to NickServ
 	if ("identify" in msg[0] and nick == "NickServ"):
 		cmd="identify " + conf['nspassword']
@@ -184,11 +206,38 @@ def handleQuit(connection, event):
 	if (ad.isAdmin(nick)):
 		ad.removeAdmin(nick)
 
+# Moving the proccess to background, that we need no more the '&' on launching or to use Screen
+def MoveToBackground():
+	UMASK = 0
+	WORKDIR = os.getcwd()
+	try:
+		 pid = os.fork()
+	except OSError, e:
+      		raise Exception, "%s [%d]" % (e.strerror, e.errno)
+      	
+      	if (pid == 0):
+		os.setsid()
+		
+		try:
+			  pid = os.fork()	# Fork a second child.
+	     	except OSError, e:
+		 	raise Exception, "%s [%d]" % (e.strerror, e.errno)
+		if (pid == 0):	
+			os.chdir(WORKDIR)
+			os.umask(UMASK)
+		else:
+			os._exit(0)
+	else:
+		os._exit(0)
+		
+	
 		
 def launch(confFile):
 	parseConf(confFile)
 	global ircc, server, configFile
 	configFile = confFile
+	ircc.add_global_handler ('ctcp', HandleCtcp) # Handle Ctcp Reuqests.
+	ircc.add_global_handler ('welcome', handleWelcome) # Handle Welcome
 	ircc.add_global_handler ('pubmsg', handlePubmsg ) # Handle messges on channel.
 	ircc.add_global_handler ('privmsg', handlePrvmsg) # Handles private messages.
 	ircc.add_global_handler ('pubmsg', handlePubmsgh ) # Handle messges on channel - for pubhandler fucntions.
@@ -198,6 +247,6 @@ def launch(confFile):
 	ircc.add_global_handler ('part', handlePart ) # handle part
 	ircc.add_global_handler ('quit', handleQuit ) # handle quit
 	ircc.add_global_handler ('join', handleJoin )
-	server.connect(conf['server'], conf['port'], conf['me'],None,None,"soombot",conf['vhost']) 
-	server.join(conf['chan'])  # Channel to join
+	print "Connecting..."
+	server.connect(conf['server'], conf['port'], conf['me'],None,None,"soombot",conf['vhost'])
 	ircc.process_forever() 

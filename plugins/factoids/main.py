@@ -73,7 +73,8 @@ def factoids_list(connection, msg, chan, nick):
     """ Return the factoids list. """
     global factoids
     connection.privmsg(nick, ', '.join(factoids))
- 
+
+
 def privadmin_factoids(connection, msg, chan, nick):
     darray = {'add': factoids_add, 'remove': factoids_remove, 'update': factoids_update, 'list': factoids_list}
 
@@ -95,3 +96,10 @@ def pubhandler_factoids(connection, event):
                 connection.privmsg(chan, '{0}'.format(factoids[command].encode('utf-8'))) # Send the factoid data to the channel
             else:
                 connection.privmsg(chan, '{0}'.format(unicode(factoids[command], 'utf-8').encode('utf-8'))) # Send the factoid data to the channel
+                
+
+# Removing all the helps when unloading the plugin.
+def unloader_factoids():
+	for factoid in factoids:
+		remove_help(factoid, "pub")
+		
