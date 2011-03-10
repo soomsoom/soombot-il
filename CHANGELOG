@@ -8,6 +8,7 @@ version 2.0.1
 * Errors logging is replacing the admin logger
 * Admins commands had changed, please see the README file.
 * New Plugins.
+* Fixing factoids (liel's plugin) to remove all commands on unloading
 * Bug Fixes
 
 
