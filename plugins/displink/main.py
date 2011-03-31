@@ -3,7 +3,7 @@
 # Built by soomsoom and ddorda
 
 
-import os, re, urllib2
+import os, re, urllib
 from BeautifulSoup import BeautifulSoup
 
 def pubhandler_displink(connection, event):
@@ -16,7 +16,7 @@ def pubhandler_displink(connection, event):
 	if (URL_re.search(txt)):
 		for url in msg:
 			if url.startswith('http') or url.startswith('https://'):
-				response = urllib2.urlopen(url)
+				response = urllib.urlopen(url)
 				content = BeautifulSoup(response.read())
 				title=str(content.html.head.title).replace("<title>","").replace("</title>","")
 				res = "%s @ %s" % (title, url.split("/")[2])
