@@ -78,22 +78,22 @@ def pluglist():
 def plugin(act):
 	if len(act) > 0:
 		if (act[0] == "load"):
-			if (act[1] != None):
+			if (len(act) > 1):
 				return plug.loadPlugin(act[1])
 			else:
 				return "What to load?"
-		elif act[0] == "unload":
-			if (act[1] != None):
+		elif (act[0] == "unload"):
+			if (len(act) > 1):
 				return plug.unloadPlugin(act[1])
 			else:
 				return "What to unload?"
-		elif act[0] == "rload":
-			if (act[1] != None):
+		elif (act[0] == "rload"):
+			if (len(act) > 1):
 				plug.reloadPlugin(act[1])
 				return "Done!"
 			else:
 				return "What to reload?"
-		elif act[0] == "list":
+		elif (act[0] == "list"):
 			#send = ", ".join(plug.loadedPlugins)
 			send = pluglist()
 			return send
@@ -129,6 +129,5 @@ def rehash(cmd):
 	global configFile
 	cor.parseConf(cor.configFile)
 	return "Done!"
-
 
 
